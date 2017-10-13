@@ -30,19 +30,10 @@ public class SpringBootMVCController {
 	public String singleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes)
 			throws SpringBootMVCException {
 		LOGGER.debug("singleFileUpload :: Start");
-		try {
-			boolean completeFlag = storageService.fileUpload(file);
-			LOGGER.debug("singleFileUpload :: End");
-			if (completeFlag) {
-				redirectAttributes.addFlashAttribute("message", "Upload Complete");
-				return "redirect:/uploadStatus";
-			} else {
-				redirectAttributes.addFlashAttribute("message", "Upload Incomplete");
-				return "redirect:/uploadStatus";
-			}
-		} catch (SpringBootMVCException springBootMVCException) {
-			throw springBootMVCException;
-		}
+		storageService.fileUpload(file);
+		redirectAttributes.addFlashAttribute("message", "Upload Complete");
+		LOGGER.debug("singleFileUpload :: End");
+		return "redirect:/uploadStatus";
 	}
 
 	@GetMapping("/uploadStatus")

@@ -14,6 +14,9 @@ public class SpringBootMVCControllerException {
 		if (e.getErrCode() == ErrorCode.MANDATORY.getCode()) {
 			redirectAttributes.addFlashAttribute("message", "Please select a file to upload.");
 			return "redirect:uploadStatus";
+		} else if (e.getErrCode() == ErrorCode.EXISTING.getCode()) {
+			redirectAttributes.addFlashAttribute("message", "File has already been uploaded before.");
+			return "redirect:uploadStatus";
 		}
 		redirectAttributes.addFlashAttribute("message", "Something went wrong, will get back to you.");
 		return "redirect:uploadStatus";
