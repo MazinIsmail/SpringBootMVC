@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: spring-boot-mvc
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration, org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+  http:
+    multipart:
+      max-file-size: 500KB
+      max-request-size: 500KB
+server:
+  port: 8082

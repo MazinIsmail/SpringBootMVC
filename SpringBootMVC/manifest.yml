@@ -1,0 +1,18 @@
+---
+#applications:
+#- name: gs-rest-service
+#  memory: 256M
+#  instances: 1
+#  host: rest-service
+#  domain: guides.spring.io
+#  path: build/libs/gs-rest-service-0.1.0.jar
+
+applications:
+  - name: servicecontract-service
+    memory: 1024M
+    instances: 1
+    buildpack: java_buildpack_offline
+    path: target/servicecontract-service-0.0.1-SNAPSHOT.jar
+    random-route: true
+    env:
+      GRANT_TYPE: client_credentials
