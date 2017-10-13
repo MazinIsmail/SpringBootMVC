@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.springboot.mvc.domain.ErrorMessage;
-import com.springboot.mvc.exception.SpringBootMVCException;
+import com.springboot.mvc.exception.SpringBootMVCControllerException;
 
 public class ValidateRequest {
 

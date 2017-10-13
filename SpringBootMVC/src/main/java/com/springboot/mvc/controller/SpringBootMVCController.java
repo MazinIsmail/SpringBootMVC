@@ -1,64 +1,48 @@
 package com.springboot.mvc.controller;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.springboot.mvc.exception.SpringBootMVCException;
 import com.springboot.mvc.service.StorageService;
 
 @Controller
 public class SpringBootMVCController {
 
-	// Save the uploaded file to this folder
-	private static String UPLOADED_FOLDER = "F://temp//";
+	private static final Logger LOGGER = LoggerFactory.getLogger(SpringBootMVCController.class);
+
+	@Autowired
+	private StorageService storageService;
 
 	@GetMapping("/")
 	public String index() {
 		return "upload";
 	}
 
-	@PostMapping("/upload") // //new annotation since 4.3
-	public String singleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
-
-		if (file.isEmpty()) {
-			redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
-			return "redirect:uploadStatus";
-		}
-
+	@PostMapping("/upload")
+	public String singleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes)
+			throws SpringBootMVCException {
+		LOGGER.debug("singleFileUpload :: Start");
 		try {
-
-			// Get the file and save it somewhere
-			byte[] bytes = file.getBytes();
-			Path path = Paths.get(UPLOADED_FOLDER + file.getOriginalFilename());
-			Files.write(path, bytes);
-
-			redirectAttributes.addFlashAttribute("message",
-					"You successfully uploaded '" + file.getOriginalFilename() + "'");
-
-		} catch (IOException e) {
-			e.printStackTrace();
+			boolean completeFlag = storageService.fileUpload(file);
+			LOGGER.debug("singleFileUpload :: End");
+			if (completeFlag) {
+				redirectAttributes.addFlashAttribute("message", "Upload Complete");
+				return "redirect:/uploadStatus";
+			} else {
+				redirectAttributes.addFlashAttribute("message", "Upload Incomplete");
+				return "redirect:/uploadStatus";
+			}
+		} catch (SpringBootMVCException springBootMVCException) {
+			throw springBootMVCException;
 		}
-
-		return "redirect:/uploadStatus";
 	}
 
 	@GetMapping("/uploadStatus")
