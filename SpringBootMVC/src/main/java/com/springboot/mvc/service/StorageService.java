@@ -1,9 +1,5 @@
 package com.springboot.mvc.service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.springboot.mvc.constants.SpringBootMVCConstants;
+import com.springboot.mvc.domain.DataUploadMapper;
 import com.springboot.mvc.domain.ErrorCode;
 import com.springboot.mvc.entity.CountDealEntity;
 import com.springboot.mvc.entity.FileListEntity;
@@ -48,7 +45,6 @@ public class StorageService {
 
 	public void fileUpload(MultipartFile file) throws SpringBootMVCException {
 		LOGGER.debug("fileUpload :: Start");
-
 		try {
 			ValidateRequest.validateFile(file);
 			String fileName = file.getOriginalFilename();
@@ -60,19 +56,20 @@ public class StorageService {
 			} else {
 				throw new SpringBootMVCException(ErrorCode.EXISTING.getCode(), ErrorCode.EXISTING.getDescription());
 			}
-			BufferedReader br;
+
+			List<DataUploadMapper> dataUploadMapperList = new ArrayList<DataUploadMapper>();
 			List<ValidDataEntity> validDataEntityList = new ArrayList<ValidDataEntity>();
 			List<InvalidDataEntity> invalidDataEntityList = new ArrayList<InvalidDataEntity>();
-			String line = null;
-			InputStream is = file.getInputStream();
-			br = new BufferedReader(new InputStreamReader(is));
-			while ((line = br.readLine()) != null) {
-				String checkValidRow = ValidateRequest.validateSingleRow(line);
-				if ("Valid".equalsIgnoreCase(checkValidRow)) {
-					validDataEntityList = storageServiceHelper.formValidDataEntity(line, validDataEntityList, fileName);
+			dataUploadMapperList = storageServiceHelper.processInputFile(file);
+			for (DataUploadMapper dataUploadMapper : dataUploadMapperList) {
+				if (dataUploadMapper.getValidationPass().equalsIgnoreCase(SpringBootMVCConstants.PASS)) {
+					ValidDataEntity validDataEntity = storageServiceHelper.formValidDataEntity(dataUploadMapper,
+							fileName);
+					validDataEntityList.add(validDataEntity);
 				} else {
-					invalidDataEntityList = storageServiceHelper.formInvalidDataEntity(line, checkValidRow,
-							invalidDataEntityList, fileName);
+					InvalidDataEntity invalidDataEntity = storageServiceHelper.formInvalidDataEntity(dataUploadMapper,
+							fileName);
+					invalidDataEntityList.add(invalidDataEntity);
 				}
 			}
 			validDataRepository.save(validDataEntityList);
@@ -81,7 +78,7 @@ public class StorageService {
 					.formCountDealEntity(validDataRepository.getCountOfDeals());
 			countDealRepository.save(countDealEntityList);
 			LOGGER.debug("fileUpload :: End");
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new SpringBootMVCException(ErrorCode.INTERNALSERVERERROR.getCode(),
 					ErrorCode.INTERNALSERVERERROR.getDescription());
 		}
