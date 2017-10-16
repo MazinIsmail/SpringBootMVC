@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.springboot.mvc.constants.SpringBootMVCConstants;
 import com.springboot.mvc.domain.ErrorCode;
 import com.springboot.mvc.exception.SpringBootMVCException;
 
@@ -17,6 +18,15 @@ public class ValidateRequest {
 			throw new SpringBootMVCException(ErrorCode.MANDATORY.getCode(), ErrorCode.MANDATORY.getDescription());
 		}
 		LOGGER.debug("formValidDataEntity :: End");
+	}
+
+	public static String validateSingleRow(String singleRow) {
+		if (singleRow.split(SpringBootMVCConstants.CSVSSPITBY).length == 5) {
+			return SpringBootMVCConstants.VALID;
+		} else {
+			return SpringBootMVCConstants.FIELD_IS_MISSING;
+		}
+
 	}
 
 }

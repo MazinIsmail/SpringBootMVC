@@ -48,9 +48,7 @@ public class StorageService {
 
 	public void fileUpload(MultipartFile file) throws SpringBootMVCException {
 		LOGGER.debug("fileUpload :: Start");
-		BufferedReader br;
-		List<String> validDataList = new ArrayList<String>();
-		List<String> invalidDataList = new ArrayList<String>();
+
 		try {
 			ValidateRequest.validateFile(file);
 			String fileName = file.getOriginalFilename();
@@ -62,20 +60,21 @@ public class StorageService {
 			} else {
 				throw new SpringBootMVCException(ErrorCode.EXISTING.getCode(), ErrorCode.EXISTING.getDescription());
 			}
+			BufferedReader br;
+			List<ValidDataEntity> validDataEntityList = new ArrayList<ValidDataEntity>();
+			List<InvalidDataEntity> invalidDataEntityList = new ArrayList<InvalidDataEntity>();
 			String line = null;
 			InputStream is = file.getInputStream();
 			br = new BufferedReader(new InputStreamReader(is));
 			while ((line = br.readLine()) != null) {
-				if (line.split(SpringBootMVCConstants.cvsSplitBy).length == 5) {
-					validDataList.add(line);
+				String checkValidRow = ValidateRequest.validateSingleRow(line);
+				if ("Valid".equalsIgnoreCase(checkValidRow)) {
+					validDataEntityList = storageServiceHelper.formValidDataEntity(line, validDataEntityList, fileName);
 				} else {
-					invalidDataList.add(line);
+					invalidDataEntityList = storageServiceHelper.formInvalidDataEntity(line, checkValidRow,
+							invalidDataEntityList, fileName);
 				}
 			}
-			List<ValidDataEntity> validDataEntityList = storageServiceHelper.formValidDataEntity(validDataList,
-					fileName);
-			List<InvalidDataEntity> invalidDataEntityList = storageServiceHelper.formInvalidDataEntity(invalidDataList,
-					fileName);
 			validDataRepository.save(validDataEntityList);
 			invalidDataRepository.save(invalidDataEntityList);
 			List<CountDealEntity> countDealEntityList = storageServiceHelper

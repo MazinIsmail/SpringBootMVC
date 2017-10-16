@@ -20,6 +20,9 @@ public class InvalidDataEntity {
 	@Column(name = "source_file_name")
 	private String sourceFileName;
 
+	@Column(name = "comments")
+	private String comments;
+
 	public String getId() {
 		return id;
 	}
@@ -42,6 +45,14 @@ public class InvalidDataEntity {
 
 	public void setSourceFileName(String sourceFileName) {
 		this.sourceFileName = sourceFileName;
+	}
+
+	public String getComments() {
+		return comments;
+	}
+
+	public void setComments(String comments) {
+		this.comments = comments;
 	}
 
 }
