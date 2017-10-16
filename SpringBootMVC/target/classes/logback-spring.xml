@@ -10,7 +10,7 @@
 		</encoder>
 	</appender>
 	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
-		<file>gpInquiry_mis.log</file>
+		<file>SpringBootMVC.log</file>
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<Pattern>
 				%-5p . [%d{dd-MM-yyyy HH:mm:ss:SSS}] [%t]
