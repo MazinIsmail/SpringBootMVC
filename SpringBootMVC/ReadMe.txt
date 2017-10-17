@@ -19,3 +19,6 @@ http://localhost:8080/getAllCountDeal - Get all count deal from the database.
 
 To know the entity and Database structure, check package:
 com.springboot.mvc.entity
+
+Note: For performance optimization Java 8's native mapping feature has been used to map file to objects, regx expression is not been used as it is less efficient.
+Running this application on a powerful server can make a big difference.
