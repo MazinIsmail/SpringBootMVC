@@ -83,6 +83,8 @@ public class StorageService {
 			// specifically mentioned.
 			countDealRepository.save(countDealEntityList);
 			LOGGER.debug("fileUpload :: End");
+		} catch (SpringBootMVCException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new SpringBootMVCException(ErrorCode.INTERNALSERVERERROR.getCode(),
 					ErrorCode.INTERNALSERVERERROR.getDescription());
