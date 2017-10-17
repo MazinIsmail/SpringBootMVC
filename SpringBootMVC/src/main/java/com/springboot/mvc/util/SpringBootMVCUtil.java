@@ -34,4 +34,12 @@ public class SpringBootMVCUtil {
 			return false;
 		}
 	}
+
+	public static String stringArrToString(String[] strArr) {
+		StringBuilder strBuilder = new StringBuilder();
+		for (int i = 0; i < strArr.length; i++) {
+			strBuilder.append(strArr[i]);
+		}
+		return strBuilder.toString();
+	}
 }

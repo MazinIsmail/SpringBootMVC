@@ -11,8 +11,6 @@ public class DataUploadMapper {
 
 	private String dealAmount;
 
-	private String sourceFileName;
-
 	private String validationPass;
 
 	private String comments;
@@ -81,14 +79,6 @@ public class DataUploadMapper {
 
 	public void setDealAmount(String dealAmount) {
 		this.dealAmount = dealAmount;
-	}
-
-	public String getSourceFileName() {
-		return sourceFileName;
-	}
-
-	public void setSourceFileName(String sourceFileName) {
-		this.sourceFileName = sourceFileName;
 	}
 
 }

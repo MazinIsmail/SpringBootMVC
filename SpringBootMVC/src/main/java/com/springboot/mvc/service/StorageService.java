@@ -48,27 +48,30 @@ public class StorageService {
 		try {
 			ValidateRequest.validateFile(file);
 			String fileName = file.getOriginalFilename();
+			// Entity to store the filenames.
 			FileListEntity fileListEntity = fileListRepository.findBySourceFileName(fileName);
+			FileListEntity fileListEntityId = null;
 			if (fileListEntity == null) {
 				FileListEntity fileListEntityAdd = new FileListEntity();
 				fileListEntityAdd.setSourceFileName(fileName);
-				fileListRepository.save(fileListEntityAdd);
+				fileListEntityId = fileListRepository.save(fileListEntityAdd);
 			} else {
 				throw new SpringBootMVCException(ErrorCode.EXISTING.getCode(), ErrorCode.EXISTING.getDescription());
 			}
-
 			List<DataUploadMapper> dataUploadMapperList = new ArrayList<DataUploadMapper>();
+			// Entity to store valid data.
 			List<ValidDataEntity> validDataEntityList = new ArrayList<ValidDataEntity>();
+			// Entity to store invalid data.
 			List<InvalidDataEntity> invalidDataEntityList = new ArrayList<InvalidDataEntity>();
 			dataUploadMapperList = storageServiceHelper.processInputFile(file);
 			for (DataUploadMapper dataUploadMapper : dataUploadMapperList) {
 				if (dataUploadMapper.getValidationPass().equalsIgnoreCase(SpringBootMVCConstants.PASS)) {
 					ValidDataEntity validDataEntity = storageServiceHelper.formValidDataEntity(dataUploadMapper,
-							fileName);
+							fileListEntityId.getId());
 					validDataEntityList.add(validDataEntity);
 				} else {
 					InvalidDataEntity invalidDataEntity = storageServiceHelper.formInvalidDataEntity(dataUploadMapper,
-							fileName);
+							fileListEntityId.getId());
 					invalidDataEntityList.add(invalidDataEntity);
 				}
 			}
@@ -76,6 +79,8 @@ public class StorageService {
 			invalidDataRepository.save(invalidDataEntityList);
 			List<CountDealEntity> countDealEntityList = storageServiceHelper
 					.formCountDealEntity(validDataRepository.getCountOfDeals());
+			// Could have avoided third table but the requirement it is
+			// specifically mentioned.
 			countDealRepository.save(countDealEntityList);
 			LOGGER.debug("fileUpload :: End");
 		} catch (Exception e) {
@@ -98,11 +103,17 @@ public class StorageService {
 	}
 
 	public List<ValidDataEntity> getAllValidDataEntityByFileName(String fileName) {
-		return validDataRepository.findBySourceFileName(fileName);
+		FileListEntity fileListEntity = fileListRepository.findBySourceFileName(fileName);
+		if (null == fileListEntity)
+			return null;
+		return validDataRepository.findBySourceFileName(fileListEntity.getId());
 	}
 
 	public List<InvalidDataEntity> getAllInvalidDataEntityByFileName(String fileName) {
-		return invalidDataRepository.findBySourceFileName(fileName);
+		FileListEntity fileListEntity = fileListRepository.findBySourceFileName(fileName);
+		if (null == fileListEntity)
+			return null;
+		return invalidDataRepository.findBySourceFileName(fileListEntity.getId());
 	}
 
 }

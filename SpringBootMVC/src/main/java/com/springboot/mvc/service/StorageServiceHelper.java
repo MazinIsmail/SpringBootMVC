@@ -21,6 +21,7 @@ import com.springboot.mvc.entity.CountDealEntity;
 import com.springboot.mvc.entity.InvalidDataEntity;
 import com.springboot.mvc.entity.ValidDataEntity;
 import com.springboot.mvc.exception.SpringBootMVCException;
+import com.springboot.mvc.util.SpringBootMVCUtil;
 import com.springboot.mvc.validation.ValidateRequest;
 
 @Service
@@ -28,7 +29,7 @@ public class StorageServiceHelper {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(StorageServiceHelper.class);
 
-	public ValidDataEntity formValidDataEntity(DataUploadMapper dataUploadMapper, String fileName) {
+	public ValidDataEntity formValidDataEntity(DataUploadMapper dataUploadMapper, String fileNameId) {
 		LOGGER.debug("formValidDataEntity :: Start");
 		ValidDataEntity validDataEntity = new ValidDataEntity();
 		validDataEntity.setId(dataUploadMapper.getId());
@@ -36,16 +37,16 @@ public class StorageServiceHelper {
 		validDataEntity.setCurrencyIsoCode(dataUploadMapper.getCurrencyIsoCode());
 		validDataEntity.setTimestmap(dataUploadMapper.getTimestmap());
 		validDataEntity.setDealAmount(dataUploadMapper.getDealAmount());
-		validDataEntity.setSourceFileName(fileName);
+		validDataEntity.setSourceFileName(fileNameId);
 		LOGGER.debug("formValidDataEntity :: End");
 		return validDataEntity;
 	}
 
-	public InvalidDataEntity formInvalidDataEntity(DataUploadMapper dataUploadMapper, String fileName) {
+	public InvalidDataEntity formInvalidDataEntity(DataUploadMapper dataUploadMapper, String fileNameId) {
 		LOGGER.debug("formInvalidDataEntity :: Start");
 		InvalidDataEntity invalidDataEntity = new InvalidDataEntity();
 		invalidDataEntity.setRawData(dataUploadMapper.getDumb());
-		invalidDataEntity.setSourceFileName(fileName);
+		invalidDataEntity.setSourceFileName(fileNameId);
 		invalidDataEntity.setComments(dataUploadMapper.getComments());
 		LOGGER.debug("formInvalidDataEntity :: End");
 		return invalidDataEntity;
@@ -64,6 +65,7 @@ public class StorageServiceHelper {
 		return countDealEntityList;
 	}
 
+	// Function to process the file and map the data to Objects.
 	public List<DataUploadMapper> processInputFile(MultipartFile file) throws SpringBootMVCException {
 		LOGGER.debug("processInputFile :: Start");
 		List<DataUploadMapper> inputList = new ArrayList<DataUploadMapper>();
@@ -95,7 +97,7 @@ public class StorageServiceHelper {
 		} else {
 			dataUploadMapper.setValidationPass(SpringBootMVCConstants.FAIL);
 			dataUploadMapper.setComments(checkValidRow);
-			dataUploadMapper.setDumb(rowData.toString());
+			dataUploadMapper.setDumb(SpringBootMVCUtil.stringArrToString(rowData));
 		}
 		return dataUploadMapper;
 	};
