@@ -17,7 +17,7 @@ http://localhost:8080/getAllInvalidData - Get all the invalid data from the data
 http://localhost:8080/getAllInvalidDataByFileName - (Request Body: <File Name> (Including extension)) - Get all the invalid data by filename from the database.
 http://localhost:8080/getAllCountDeal - Get all count deal from the database.
 
-To know the entity and Database structure, check package:
+To know the entity and database structure, check package:
 com.springboot.mvc.entity
 
 Note: For performance optimization Java 8's native mapping feature has been used to map file to objects, regx expression is not been used as it is less efficient.
