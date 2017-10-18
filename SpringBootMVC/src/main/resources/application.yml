@@ -3,6 +3,8 @@ spring:
     name: spring-boot-mvc
   jpa:
     generate-ddl: true
+    hibernate:
+      ddl-auto: none
   datasource:
     name: fileUpload
   http:
